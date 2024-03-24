@@ -2,7 +2,6 @@ import cv2
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix
 
 def gray_hist_compare(image1, image2):
     grayImg1 = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY)
