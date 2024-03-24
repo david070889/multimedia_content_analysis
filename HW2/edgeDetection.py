@@ -26,26 +26,40 @@ def ECR(frame, prev_frame, going, goout):
 
     return max(safe_div(float(in_pixels),float(pixels_sum_new)), safe_div(float(out_pixels),float(pixels_sum_old)))
 
-def process_images_from_directory(directory, ecr_arr):
-    images = sorted([img for img in os.listdir(directory) if img.endswith(".jpg") or img.endswith(".png")])
-    prev_frame = None
-    for image_name in images:
-        frame = cv2.imread(os.path.join(directory, image_name))
-        if prev_frame is not None:
-            ecr_value = ECR(frame, prev_frame, frame.shape[1], frame.shape[0])
-            ecr_arr.append(ecr_value)
-            ##print(f"ECR between {prev_image_name} and {image_name}: {ecr_value}")
-            ##combined_image = np.hstack((prev_frame, frame))
-            ##cv2.imshow("Comparison", combined_image)
-            ##cv2.waitKey(1000) # Waits for 1 second before moving on to the next image pair
-        prev_frame = frame
-        prev_image_name = image_name
+def process_images_from_dict(folder, hist_diff_arr):
+    prev_img = None
+    img = None
+    for image_name in os.listdir(folder):
+        if image_name.endswith(".png") or image_name.endswith(".jpg") or image_name.endswith(".jpeg"):
+            img_path = os.path.join(folder, image_name)
+            img = cv2.imread(img_path)
+            if prev_img is not None:
+                hist_diff = ECR(img, prev_img)
+                hist_diff_arr.append(hist_diff)
 
-    cv2.destroyAllWindows()
+        prev_img = img
+
+def pr_cruve(answer_image_number, my_answer_image_number):
+    TP = 0
+    FP = 0
+    FN = 0
+
+    np_answer_image_number = np.array(answer_image_number)
+    np_my_answer_image_number = np.array(my_answer_image_number)
+
+    TP_array_result = np.in1d(answer_image_number, my_answer_image_number)
+    TP_array = np_answer_image_number[TP_array_result]
+    # print(TP_array)
+    TP = len(TP_array)
+    FP = len(my_answer_image_number) - TP
+    FN = len(answer_image_number) - TP
+    precision = TP / (TP + FP)
+    recall = TP / (TP + FN)
+    return (precision, recall)
 
 # Replace 'path_to_directory' with the path to the folder containing your images
 ecr_arr = []
-process_images_from_directory('climate_out', ecr_arr)
+process_images_from_dict('ngc-out', ecr_arr)
 threshold = []
 for i in range(len(ecr_arr)):
     if ecr_arr[i] >= 0.7:
