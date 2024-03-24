@@ -36,24 +36,29 @@ def process_images_from_dict(folder, hist_diff_arr):
 
         prev_img = img
 
-
-def pr_cruve(answer_image_number, my_answer_image_number):
+def calculate_precision_recall(actual, predicted):
     TP = 0
     FP = 0
     FN = 0
+    
+    for predicted_val in predicted:
+        for actual_val in actual:
+            if isinstance(actual_val, list):  # 如果 a 中的元素是列表（區間）
+                if predicted_val in actual_val:  # 檢查 b_val 是否在區間內
+                    TP += 1
+                    break
+            elif predicted_val == actual_val:  # 如果 a 中的元素是數值，直接比較
+                TP += 1
+                break
 
-    np_answer_image_number = np.array(answer_image_number)
-    np_my_answer_image_number = np.array(my_answer_image_number)
-
-    TP_array_result = np.in1d(answer_image_number, my_answer_image_number)
-    TP_array = np_answer_image_number[TP_array_result]
-    # print(TP_array)
-    TP = len(TP_array)
-    FP = len(my_answer_image_number) - TP
-    FN = len(answer_image_number) - TP
-    precision = TP / (TP + FP)
-    recall = TP / (TP + FN)
-    return (precision, recall)
+    FP = len(predicted) - TP
+    FN = len(actual) - TP
+            
+            
+    precision = TP / (TP + FP) if (TP + FP) > 0 else 0
+    recall = TP / (TP + FN) if (TP + FN) > 0 else 0
+    
+    return precision, recall
 
 hist_diff_arr = []
 predicted = []
@@ -63,7 +68,7 @@ for i in range(len(hist_diff_arr)):
         predicted.append(i + 1)
 print(predicted)
 actual = [73,235, 301, 370, 452, 861, 1281]
-precision, recall = pr_cruve(actual, predicted)
+precision, recall = calculate_precision_recall(actual, predicted)
 print(precision)
 print(recall)
 x_axis = list(range(len(hist_diff_arr)))  # 生成索引列表

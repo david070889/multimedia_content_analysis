@@ -3,7 +3,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
-def ECR(frame, prev_frame, going, goout):
+def ECR(frame, prev_frame):
     safe_div = lambda x,y: 0 if y == 0 else x / y #確保不會出現除法錯誤
 
     gray_image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -39,32 +39,49 @@ def process_images_from_dict(folder, hist_diff_arr):
 
         prev_img = img
 
-def pr_cruve(answer_image_number, my_answer_image_number):
+def calculate_precision_recall(actual, predicted):
     TP = 0
     FP = 0
     FN = 0
+    
+    for predicted_val in predicted:
+        for actual_val in actual:
+            if isinstance(actual_val, list):  # 如果 a 中的元素是列表（區間）
+                if predicted_val in actual_val:  # 檢查 b_val 是否在區間內
+                    TP += 1
+                    break
+            elif predicted_val == actual_val:  # 如果 a 中的元素是數值，直接比較
+                TP += 1
+                break
 
-    np_answer_image_number = np.array(answer_image_number)
-    np_my_answer_image_number = np.array(my_answer_image_number)
-
-    TP_array_result = np.in1d(answer_image_number, my_answer_image_number)
-    TP_array = np_answer_image_number[TP_array_result]
-    # print(TP_array)
-    TP = len(TP_array)
-    FP = len(my_answer_image_number) - TP
-    FN = len(answer_image_number) - TP
-    precision = TP / (TP + FP)
-    recall = TP / (TP + FN)
-    return (precision, recall)
+    FP = len(predicted) - TP
+    FN = len(actual) - TP
+            
+            
+    precision = TP / (TP + FP) if (TP + FP) > 0 else 0
+    recall = TP / (TP + FN) if (TP + FN) > 0 else 0
+    
+    return precision, recall
 
 # Replace 'path_to_directory' with the path to the folder containing your images
 ecr_arr = []
-process_images_from_dict('ngc-out', ecr_arr)
-threshold = []
+process_images_from_dict('climate_out', ecr_arr)
+predicted = []
 for i in range(len(ecr_arr)):
-    if ecr_arr[i] >= 0.7:
-        threshold.append(i + 2)
-print(threshold)
+    if ecr_arr[i] >= 0.8:
+        predicted.append(i + 2)
+print(predicted)
+a = [range(455, 479)]
+b = [range(542, 579)]
+c = [range(608, 645)]
+d = [range(675, 697)]
+e = [range(774, 799)]
+f = [range(886, 887)]
+
+actual = [93, 157, 232, 314, 355, a, b, c, d, e, f, 1021, 1237, 1401, 1555]
+precision, recall = calculate_precision_recall(actual, predicted)
+print(precision)
+print(recall)
 # 使用列表的索引作為 x 軸，列表中的數字作為 y 軸
 x_axis = list(range(len(ecr_arr)))  # 生成索引列表
 y_axis = ecr_arr  # 數據列表
