@@ -1,5 +1,6 @@
 import cv2
 import os
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -94,21 +95,28 @@ if __name__ == '__main__':
     m_ngc = [range(1048, 1060)]
     actual_ngc = [a_ngc, b_ngc, 285, 340, 383, c_ngc, 456, d_ngc, e_ngc, f_ngc, g_ngc, 683, 703, 722, h_ngc, i_ngc, j_ngc, k_ngc, 859, 868, 876, 885, 897, 909, 921, 933, 943, 958, 963, 965, 969, 976, 986, l_ngc, 1038, m_ngc]
 
-    folder = 'climate_out' # 另外兩個為 'news_out' 'climate_out'
-    pic_name = 'climate' # 另外兩個為 'news' 'climate'
+    ## 4個需要改變的parameter
+    folder = 'climate_out' # 三個分別為 'news_out' 'climate_out' 'ngc_out'
+    pic_name = 'climate' # 三個分別為 'news' 'climate' 'ngc'
+    actual = actual_climate # 三個分別為 actual_news, actual_climate, actual_ngc
     threshold = 0.8 #這裡可調整threshold選取
+
+    starttime = time.time()
     process_images_from_dict(folder, hist_diff_arr)
     for i in range(len(hist_diff_arr)):
         if hist_diff_arr[i] <= threshold: 
             predicted.append(i + 2) ## 加1的原因是 index i = 0 時，其實為第0張圖片改變為第1張圖片，所以加入offset  
-            # news要 + 1 
+            # news, ngc 要 + 1 
             #climate因為從0001開始 所以 + 2
     print(predicted)
+    endtime = time.time()
 
-    precision, recall = calculate_precision_recall(actual_climate, predicted) #1st參數 決定比較的data set
+    precision, recall = calculate_precision_recall(actual, predicted) # 1st參數 決定比較的data set # 三個分別為 actual_news, actual_climate, actual_ngc
+
     print(f'Performance of gray_histogram_difference method with {pic_name} images')
     print(f'precision :{precision}')
     print(f'recall :{recall}')
+    print(f'execution time : {endtime - starttime} sec')
     x_axis = list(range(len(hist_diff_arr)))  # 生成索引列表
     y_axis = hist_diff_arr  # 數據列表
     z = [threshold] * len(hist_diff_arr) #圖片中的threshold
@@ -120,3 +128,4 @@ if __name__ == '__main__':
     plt.grid(True)  # 顯示網格
     plt.legend(loc='lower right', fontsize='small', frameon=True)
     plt.show()
+
