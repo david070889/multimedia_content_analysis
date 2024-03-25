@@ -3,6 +3,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def gray_hist_compare(image1, image2):
     grayImg1 = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY)
     grayImg2 = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)
@@ -59,55 +60,63 @@ def calculate_precision_recall(actual, predicted):
     
     return precision, recall
 
-hist_diff_arr = []
-predicted = []
-folder = 'ngc_out'
-process_images_from_dict(folder, hist_diff_arr)
-for i in range(len(hist_diff_arr)):
-    if hist_diff_arr[i] <= 0.4:
-        predicted.append(i + 2)
-print(predicted)
+if __name__ == '__main__':
+    #初始化
+    hist_diff_arr = [] 
+    predicted = []
+ 
+    # news
+    actual_news = [73,235, 301, 370, 452, 861, 1281]
 
-# news
-# actual = [73,235, 301, 370, 452, 861, 1281]
+    # climate
+    # 這邊的interval 不知道要怎麼處理 用笨方法
+    a_climate = [range(455, 479)]
+    b_climate = [range(542, 579)]
+    c_climate = [range(608, 645)]
+    d_climate = [range(675, 698)]
+    e_climate = [range(774, 800)]
+    f_climate = [range(886, 888)]
+    actual_climate= [93, 157, 232, 314, 355, a_climate, b_climate, c_climate, d_climate, e_climate, f_climate, 1021, 1237, 1401, 1555]
 
-# climate
-# pic_name = 'climate'
-# a = [range(455, 479)]
-# b = [range(542, 579)]
-# c = [range(608, 645)]
-# d = [range(675, 697)]
-# e = [range(774, 799)]
-# f = [range(886, 887)]
-# actual = [93, 157, 232, 314, 355, a, b, c, d, e, f, 1021, 1237, 1401, 1555]
+    #ngc
+    a_ngc = [range(127, 165)]
+    b_ngc = [range(196, 254)]
+    c_ngc = [range(384, 445)]
+    d_ngc = [range(516, 536)]
+    e_ngc = [range(540, 574)]
+    f_ngc = [range(573, 623)]
+    g_ngc = [range(622, 665)]
+    h_ngc = [range(728, 749)]
+    i_ngc = [range(760, 817)]
+    j_ngc = [range(816, 839)]
+    k_ngc = [range(840, 852)]
+    l_ngc = [range(1003, 1010)]
+    m_ngc = [range(1048, 1060)]
+    actual_ngc = [a_ngc, b_ngc, 285, 340, 383, c_ngc, 456, d_ngc, e_ngc, f_ngc, g_ngc, 683, 703, 722, h_ngc, i_ngc, j_ngc, k_ngc, 859, 868, 876, 885, 897, 909, 921, 933, 943, 958, 963, 965, 969, 976, 986, l_ngc, 1038, m_ngc]
 
-#ngc
-pic_name = 'ngc'
-a = [range(127, 164)]
-b = [range(196, 253)]
-c = [range(384, 444)]
-d = [range(516, 535)]
-e = [range(540, 573)]
-f = [range(573, 622)]
-g = [range(622, 664)]
-h = [range(728, 749)]
-i = [range(760, 816)]
-j = [range(816, 838)]
-k = [range(840, 851)]
-l = [range(1003, 1009)]
-m = [range(1048, 1059)]
-actual = [a, b, 285, 340, 383, c, 456, d, e, f, g, 683, 703, 722, h, i, j, k, 859, 868, 876, 885, 897, 909, 921, 933, 943, 958, 963, 965, 969, 976, 986, l, 1038, m]
-precision, recall = calculate_precision_recall(actual, predicted)
-print(f'Performance of {pic_name} images with gray_histogram_difference')
-print(f'precision :{precision}')
-print(f'recall :{recall}')
-x_axis = list(range(len(hist_diff_arr)))  # 生成索引列表
-y_axis = hist_diff_arr  # 數據列表
-z = [0.8] * len(hist_diff_arr)
-plt.figure() 
-plt.plot(x_axis, y_axis, linestyle='-', color='b', label = 'similarity')
-plt.plot(x_axis, z, linestyle='--', color='orange', label = 'threshold')
-plt.title('Grayscale Histogram difference')
-plt.grid(True)  # 顯示網格
-plt.legend(loc='lower right', fontsize='small', frameon=True)
-plt.show()
+    folder = 'climate_out' # 另外兩個為 'news_out' 'climate_out'
+    pic_name = 'climate' # 另外兩個為 'news' 'climate'
+    threshold = 0.8 #這裡可調整threshold選取
+    process_images_from_dict(folder, hist_diff_arr)
+    for i in range(len(hist_diff_arr)):
+        if hist_diff_arr[i] <= threshold: 
+            predicted.append(i + 2) ## 加1的原因是 index i = 0 時，其實為第0張圖片改變為第1張圖片，所以加入offset  
+            # news要 + 1 
+            #climate因為從0001開始 所以 + 2
+    print(predicted)
+
+    precision, recall = calculate_precision_recall(actual_climate, predicted) #1st參數 決定比較的data set
+    print(f'Performance of gray_histogram_difference method with {pic_name} images')
+    print(f'precision :{precision}')
+    print(f'recall :{recall}')
+    x_axis = list(range(len(hist_diff_arr)))  # 生成索引列表
+    y_axis = hist_diff_arr  # 數據列表
+    z = [threshold] * len(hist_diff_arr) #圖片中的threshold
+
+    plt.figure() 
+    plt.plot(x_axis, y_axis, linestyle='-', color='b', label = 'similarity')
+    plt.plot(x_axis, z, linestyle='--', color='orange', label = 'threshold')
+    plt.title('Grayscale Histogram difference')
+    plt.grid(True)  # 顯示網格
+    plt.legend(loc='lower right', fontsize='small', frameon=True)
+    plt.show()
