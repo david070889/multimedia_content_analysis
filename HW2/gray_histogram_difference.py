@@ -61,19 +61,53 @@ def calculate_precision_recall(actual, predicted):
 
 hist_diff_arr = []
 predicted = []
-process_images_from_dict('news_out', hist_diff_arr)
+folder = 'ngc_out'
+process_images_from_dict(folder, hist_diff_arr)
 for i in range(len(hist_diff_arr)):
-    if hist_diff_arr[i] <= 0.8:
-        predicted.append(i + 1)
+    if hist_diff_arr[i] <= 0.4:
+        predicted.append(i + 2)
 print(predicted)
-actual = [73,235, 301, 370, 452, 861, 1281]
+
+# news
+# actual = [73,235, 301, 370, 452, 861, 1281]
+
+# climate
+# pic_name = 'climate'
+# a = [range(455, 479)]
+# b = [range(542, 579)]
+# c = [range(608, 645)]
+# d = [range(675, 697)]
+# e = [range(774, 799)]
+# f = [range(886, 887)]
+# actual = [93, 157, 232, 314, 355, a, b, c, d, e, f, 1021, 1237, 1401, 1555]
+
+#ngc
+pic_name = 'ngc'
+a = [range(127, 164)]
+b = [range(196, 253)]
+c = [range(384, 444)]
+d = [range(516, 535)]
+e = [range(540, 573)]
+f = [range(573, 622)]
+g = [range(622, 664)]
+h = [range(728, 749)]
+i = [range(760, 816)]
+j = [range(816, 838)]
+k = [range(840, 851)]
+l = [range(1003, 1009)]
+m = [range(1048, 1059)]
+actual = [a, b, 285, 340, 383, c, 456, d, e, f, g, 683, 703, 722, h, i, j, k, 859, 868, 876, 885, 897, 909, 921, 933, 943, 958, 963, 965, 969, 976, 986, l, 1038, m]
 precision, recall = calculate_precision_recall(actual, predicted)
-print(precision)
-print(recall)
+print(f'Performance of {pic_name} images with gray_histogram_difference')
+print(f'precision :{precision}')
+print(f'recall :{recall}')
 x_axis = list(range(len(hist_diff_arr)))  # 生成索引列表
 y_axis = hist_diff_arr  # 數據列表
+z = [0.8] * len(hist_diff_arr)
 plt.figure() 
-plt.plot(x_axis, y_axis, linestyle='-', color='b')
+plt.plot(x_axis, y_axis, linestyle='-', color='b', label = 'similarity')
+plt.plot(x_axis, z, linestyle='--', color='orange', label = 'threshold')
 plt.title('Grayscale Histogram difference')
 plt.grid(True)  # 顯示網格
+plt.legend(loc='lower right', fontsize='small', frameon=True)
 plt.show()
