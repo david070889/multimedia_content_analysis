@@ -96,16 +96,16 @@ if __name__ == '__main__':
     actual_ngc = [a_ngc, b_ngc, 285, 340, 383, c_ngc, 456, d_ngc, e_ngc, f_ngc, g_ngc, 683, 703, 722, h_ngc, i_ngc, j_ngc, k_ngc, 859, 868, 876, 885, 897, 909, 921, 933, 943, 958, 963, 965, 969, 976, 986, l_ngc, 1038, m_ngc]
 
     ## 4個需要改變的parameter
-    folder = 'climate_out' # 三個分別為 'news_out' 'climate_out' 'ngc_out'
-    pic_name = 'climate' # 三個分別為 'news' 'climate' 'ngc'
-    actual = actual_climate # 三個分別為 actual_news, actual_climate, actual_ngc
+    folder = 'news_out' # 三個分別為 'news_out' 'climate_out' 'ngc_out'
+    pic_name = 'news' # 三個分別為 'news' 'climate' 'ngc'
+    actual = actual_news # 三個分別為 actual_news, actual_climate, actual_ngc
     threshold = 0.8 #這裡可調整threshold選取
 
     starttime = time.time()
     process_images_from_dict(folder, hist_diff_arr)
     for i in range(len(hist_diff_arr)):
         if hist_diff_arr[i] <= threshold: 
-            predicted.append(i + 2) ## 加1的原因是 index i = 0 時，其實為第0張圖片改變為第1張圖片，所以加入offset  
+            predicted.append(i + 1) ## 加1的原因是 index i = 0 時，其實為第0張圖片改變為第1張圖片，所以加入offset  
             # news, ngc 要 + 1 
             #climate因為從0001開始 所以 + 2
     print(predicted)
@@ -124,7 +124,7 @@ if __name__ == '__main__':
     plt.figure() 
     plt.plot(x_axis, y_axis, linestyle='-', color='b', label = 'similarity')
     plt.plot(x_axis, z, linestyle='--', color='orange', label = 'threshold')
-    plt.title('Grayscale Histogram difference')
+    plt.title('Grayscale Histogram difference of ' + pic_name)
     plt.grid(True)  # 顯示網格
     plt.legend(loc='lower right', fontsize='small', frameon=True)
     plt.show()

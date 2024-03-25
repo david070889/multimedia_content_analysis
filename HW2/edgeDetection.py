@@ -102,7 +102,7 @@ if __name__ == '__main__':
     folder = 'ngc_out' # 三個分別為 'news_out' 'climate_out' 'ngc_out'
     pic_name = 'ngc' # 三個分別為 'news' 'climate' 'ngc'
     actual = actual_ngc # 三個分別為 actual_news, actual_climate, actual_ngc
-    threshold = 1 #這裡可調整threshold選取
+    threshold = 0.25 #這裡可調整threshold選取
 
     starttime = time.time()
     process_images_from_dict(folder, ecr_arr)
