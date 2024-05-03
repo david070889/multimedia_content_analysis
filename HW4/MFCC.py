@@ -45,7 +45,7 @@ for train_index, test_index in kf.split(data, labels_encoded):
     y_train, y_test = labels_encoded[train_index], labels_encoded[test_index]
 
     # 訓練 GMM
-    gmm = GaussianMixture(n_components=2, covariance_type='diag', max_iter=200, random_state=0)
+    gmm = GaussianMixture(n_components=10, covariance_type='diag', max_iter=200, random_state=0)
     gmm.fit(X_train, y_train)
 
     # 預測
