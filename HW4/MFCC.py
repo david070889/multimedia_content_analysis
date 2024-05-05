@@ -14,23 +14,24 @@ genres = ['blues', 'classical', 'country', 'disco', 'hiphop', 'jazz', 'metal', '
 def extract_features(file_path):
     y, sr = librosa.load(file_path)
     mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
-    return mfccs.mean(axis=1)  # 取平均值作為特徵向量
+    mfccs_mean = np.mean(mfccs, axis=1)
+    mfccs_std = np.std(mfccs, axis=1)
+    return np.hstack((mfccs_mean, mfccs_std))
 
 # 載入數據
 temp = []
-data = []
+audio_files = []
 labels = []
 for genre in genres:
     for filename in os.listdir(genre):
         if filename.endswith(".wav"):  # 確保處理 .wav 檔案
             file_path = os.path.join(genre, filename)
-            mfccs = extract_features(file_path)
-            data.append(mfccs)
+            audio_files.append(file_path)
             labels.append(genre)
 
-data = np.array(data)
+audio_files = np.array(audio_files)
 labels = np.array(labels)
-
+features = np.array([extract_features(file) for file in audio_files])
 # 將標籤轉換為數字
 le = LabelEncoder()
 labels_encoded = le.fit_transform(labels)
@@ -39,13 +40,13 @@ labels_encoded = le.fit_transform(labels)
 kf = StratifiedKFold(n_splits=5)
 accuracys = []
 
-for train_index, test_index in kf.split(data, labels_encoded):
+for train_index, test_index in kf.split(features, labels_encoded):
     # 分割數據
-    X_train, X_test = data[train_index], data[test_index]
+    X_train, X_test = features[train_index], features[test_index]
     y_train, y_test = labels_encoded[train_index], labels_encoded[test_index]
 
     # 訓練 GMM
-    gmm = GaussianMixture(n_components=10, covariance_type='diag', max_iter=200, random_state=0)
+    gmm = GaussianMixture(n_components=1, covariance_type='diag', max_iter=200, random_state=0)
     gmm.fit(X_train, y_train)
 
     # 預測
