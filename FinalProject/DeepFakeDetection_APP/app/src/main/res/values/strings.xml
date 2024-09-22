@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">DeepFakeDetection</string>
+    <string-array name="models_array">
+        <item>MobileNetV3</item>
+        <item>ShuffleNetV2  </item>
+        <item>RepVGG</item>
+        <item>RepViT</item>
+        <item>efficientformerV2</item>
+        <item>efficientnet</item>
+    </string-array>
+</resources>
